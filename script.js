@@ -2,92 +2,119 @@ let ul = document.querySelector(".display ul")
 document.querySelector(".choose-expense form").addEventListener('submit',saveDetails);
 window.addEventListener('load', renderElements)
 ul.addEventListener('click', handleClick)
-function saveDetails(e){
+
+
+const axiosInstance = axios.create({
+    baseURL : "http://localhost:4000/expense"
+})
+
+var next = null;
+var id = null;
+
+async function saveDetails(e){
     e.preventDefault();
     // console.log("demo")
 
+    try{
     const value = {
         expense : e.target.expense.value,
         description : e.target.description.value,
         category : e.target.category.value
     }
-    let data = []
-    if(localStorage.getItem('values') !== null){
-        data = JSON.parse(localStorage.getItem('values'))
+    if(id === null){
 
-    }
-    data.push(value)
-    console.log(data)
-    let li = document.createElement('li')
-    li.appendChild(document.createTextNode(`${data.length} ${value.expense} -
-     ${value.description} - ${value.category} `))
-
-     let del = document.createElement('button')
-     del.appendChild(document.createTextNode("Delete expense"))
-     del.classList.add('delete')
-     let edit = document.createElement('button')
-     edit.appendChild(document.createTextNode("Edit expense"))
-     edit.classList.add('edit')
-     li.appendChild(del)
-     li.appendChild(edit)
-
+    
+    let {data } = await axiosInstance.post('/add-expense' , value)
+    console.log(data.data)
+    let li = display(data.data)
      ul.appendChild(li)
+    }else{
+        let res = await axiosInstance.post(`/edit-expense/${id}` , value)
+        console.log(res)
+        if(res.status == 200){
+            value.id = id;
+            let li = display(value);
+            ul.insertBefore( li , next)
 
-    // renderElements(data)
+        }
+            next = null
+            id= null
+      
+       
+    }
 
-        // data = localStorage.getItem
-    localStorage.setItem('values' , JSON.stringify(data ))
+
     document.getElementById('expense').value = ''
     document.getElementById('description').value = ''
     document.getElementById('category').value = 'movie'
+}catch(e){
+    console.log(e)
+}
 }
 
-function renderElements(){
-    if(localStorage.getItem('values') !== null){
-        ul.innerHTML =``
-    let data = JSON.parse(localStorage.getItem('values'))
-    data.forEach((value,index) => {
+async function renderElements(){
+
+    let data = await axiosInstance.get()
+    console.log(data)
+    let users = data.data.data;
+    users.forEach((value) => {
         
   
-        let li = document.createElement('li')
-    li.appendChild(document.createTextNode(`${index+1} ${value.expense} -
-     ${value.description} - ${value.category} `))
+    let li = display(value)
+     ul.appendChild(li)
+    })
+}
+
+
+function display(data){
+    let li = document.createElement('li')
+    let span1 = document.createElement('span')
+    span1.textContent = data.expense
+    let span2 = document.createElement('span')
+    span2.textContent = data.description
+    let span3 = document.createElement('span')
+    span3.textContent = data.category
+
+    li.appendChild(span1)
+    li.appendChild(span2)
+    li.appendChild(span3)
+
 
      let del = document.createElement('button')
      del.appendChild(document.createTextNode("Delete expense"))
      del.classList.add('delete')
+     del.id = data.id
      let edit = document.createElement('button')
      edit.appendChild(document.createTextNode("Edit expense"))
      edit.classList.add('edit')
+     edit.id = data.id
      li.appendChild(del)
      li.appendChild(edit)
-
-     ul.appendChild(li)
-    })
-}
+     return li;
 }
 
-function handleClick(e){
+async function handleClick(e){
+    try{
     if(e.target.classList.contains('delete')){
-        let index = e.target.parentNode.textContent.substr(0,1) -1
-        console.log(index)
-        let data = JSON.parse(localStorage.getItem('values'))
-        data.splice(index,1)
-        localStorage.setItem('values' , JSON.stringify(data))
-        renderElements()
+        let expenseId = e.target.id;
+        let res = await axiosInstance.delete(`/deleteExpense/${expenseId}`)
+        if(res.status == 200){
+            ul.removeChild(e.target.parentElement)
+        }
+        console.log(res)
     }
     if(e.target.classList.contains('edit')){
-        let index = e.target.parentNode.textContent.substr(0,1) -1
-        console.log(index)
-        let data = JSON.parse(localStorage.getItem('values'))
-        let edit = data.splice(index,1)
-        localStorage.setItem('values' , JSON.stringify(data))
-        renderElements()
-        console.log(edit[0].expense)
-        document.getElementById('expense').value = edit[0].expense
-        document.getElementById('description').value = edit[0].description
-        document.getElementById('category').value = edit[0].category
+        next = e.target.parentElement.nextElementSibling
+        id = e.target.id;
+        let li = e.target.parentElement;
+        let spans = li.getElementsByTagName('span')
+        document.getElementById('expense').value = spans[0].textContent
+        document.getElementById('description').value = spans[1].textContent
+        document.getElementById('category').value = spans[2].textContent
+        ul.removeChild(li)
     }
-    // console.log(e.target.style.contains('.delete'))
+    }catch(e){
+        console.log(e)
+    }
 }
 
