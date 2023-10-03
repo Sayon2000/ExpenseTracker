@@ -16,11 +16,16 @@ async function createUser(e){
             password : e.target.password.value,
         }
         const res = await axiosInstance.post('/createUser' , data)
+
+
         console.log(res)
         e.target.name.value = ""
         e.target.email.value = ""
         e.target.password.value = ""
     }catch(e){
+        console.log(e.response.status)
+        if(e.response.status == 401)
+             alert("user already exists")
         console.log(e)
     }
 }

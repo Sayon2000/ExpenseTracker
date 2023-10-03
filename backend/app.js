@@ -15,7 +15,8 @@ app.use('/user' , userRoutes)
 
 
 sequelize
-.sync({force : true})
+.sync()
+// .sync({force : true})
 .then((result) => {
     app.listen(4000)
 }).catch(e => console.log(e))
