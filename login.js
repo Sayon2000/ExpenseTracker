@@ -17,8 +17,11 @@ async function loginUser(e){
     try{
         const result = await axiosInstance.post('/login' , data)
         console.log(result)
+        if(result.data.success)
+            alert("login succesfully")
     }catch(e){
         console.log(e)
+        alert(e.response.data.msg)
     }
 
 }
