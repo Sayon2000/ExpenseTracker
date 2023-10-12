@@ -1,7 +1,7 @@
 const Expense = require('../models/expense')
 
 exports.getAll = (req,res)=>{
-    Expense.findAll({raw : true ,
+    req.user.getExpenses({raw : true ,
          attributes :["id" , "expense" ,"category" , "description"]})
          .then(data =>{
         return res.json({data})
@@ -17,7 +17,7 @@ exports.addExpense = (req,res)=>{
     const description = req.body.description;
     const category = req.body.category;
 
-    Expense.create({
+    req.user.createExpense({
         expense : expense,
         description : description,
         category : category
@@ -32,8 +32,8 @@ exports.addExpense = (req,res)=>{
 
 exports.deleteExpense = (req,res)=>{
     const id = req.params.id;
-    Expense.findByPk(id).then(expense =>{
-        return expense.destroy()
+    req.user.getExpenses({where : { id : id}}).then(expense =>{
+        return expense[0].destroy()
     }).then(()=>{
         return res.status(200).json({success : true , msg : "deleted successfully"})
     }).catch(e =>{
@@ -44,11 +44,11 @@ exports.deleteExpense = (req,res)=>{
 
 exports.editExpense = (req,res)=>{
     const id = req.params.id;
-    Expense.findByPk(id).then(data =>{
-        data.expense = req.body.expense,
-        data.description = req.body.description,
-        data.category = req.body.category
-        return data.save()
+    req.user.getExpenses({ where : {id : id}} ).then(data =>{
+        data[0].expense = req.body.expense,
+        data[0].description = req.body.description,
+        data[0].category = req.body.category
+        return data[0].save()
     }).then(() =>{
         return res.json({success : true})
     }).catch(e =>{

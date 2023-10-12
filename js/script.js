@@ -6,6 +6,7 @@ ul.addEventListener('click', handleClick)
 
 const axiosInstance = axios.create({
     baseURL : "http://localhost:4000/expense"
+
 })
 
 var next = null;
@@ -23,13 +24,26 @@ async function saveDetails(e){
     }
     if(id === null){
 
-    
-    let {data } = await axiosInstance.post('/add-expense' , value)
+    console.log(localStorage.getItem('token'))
+    let {data } = await axiosInstance.post('/add-expense' ,value ,{
+        
+        headers : {
+            "auth-token": localStorage.getItem('token')
+        }}
+        
+    )
+    // let {data } = await axiosInstance.post('/add-expense' ,
+    // //      value
+    // // )
     console.log(data.data)
     let li = display(data.data)
      ul.appendChild(li)
     }else{
-        let res = await axiosInstance.post(`/edit-expense/${id}` , value)
+        let res = await axiosInstance.post(`/edit-expense/${id}` , value ,{
+            headers : {
+                "auth-token" : localStorage.getItem('token')
+            }
+        })
         console.log(res)
         if(res.status == 200){
             value.id = id;
@@ -53,8 +67,15 @@ async function saveDetails(e){
 }
 
 async function renderElements(){
+    if(localStorage.getItem('token') == undefined   )
+        window.location = "/login.html"
 
-    let data = await axiosInstance.get()
+        // axiosInstance.setHeaders({});
+        let data = await axiosInstance.get('/',{
+            headers : {
+                "auth-token": localStorage.getItem('token')
+            }
+        })
     console.log(data)
     let users = data.data.data;
     users.forEach((value) => {
@@ -97,7 +118,11 @@ async function handleClick(e){
     try{
     if(e.target.classList.contains('delete')){
         let expenseId = e.target.id;
-        let res = await axiosInstance.delete(`/deleteExpense/${expenseId}`)
+        let res = await axiosInstance.delete(`/deleteExpense/${expenseId}`,{
+            headers : {
+                "auth-token" : localStorage.getItem('token')
+            }
+        })
         if(res.status == 200){
             ul.removeChild(e.target.parentElement)
         }
@@ -118,3 +143,9 @@ async function handleClick(e){
     }
 }
 
+
+
+document.getElementById("logout").addEventListener('click' ,  ()=>{
+    localStorage.removeItem("token")
+    window.location ="/login.html"
+})

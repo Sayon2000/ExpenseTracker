@@ -5,13 +5,16 @@ const router = express.Router();
 const Expense = require('../models/expense')
 const expense = require('../controller/expense')
 
-router.get('/' , expense.getAll) //fetch all the expense 
+const authenticate = require('../middleware/auth')
 
-router.post('/add-expense' , expense.addExpense) // add a new expense
 
-router.delete('/deleteExpense/:id' , expense.deleteExpense) // delete a expense
+router.get('/' ,authenticate, expense.getAll) //fetch all the expense 
 
-router.post('/edit-expense/:id' , expense.editExpense)
+router.post('/add-expense' , authenticate,expense.addExpense) // add a new expense
+
+router.delete('/deleteExpense/:id' , authenticate, expense.deleteExpense) // delete a expense
+
+router.post('/edit-expense/:id' , authenticate,expense.editExpense)
 
 
 

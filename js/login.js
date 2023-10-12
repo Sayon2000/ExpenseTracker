@@ -1,4 +1,4 @@
-document.getElementById('signup').addEventListener('submit' , loginUser)
+document.getElementById('login').addEventListener('submit' , loginUser)
 
 const axiosInstance = axios.create({
     baseURL : "http://localhost:4000/user"
@@ -19,6 +19,7 @@ async function loginUser(e){
         console.log(result)
         if(result.data.success){
             alert("login succesfully")
+            localStorage.setItem('token' , result.data.token)
             window.location ="/"
         }
     }catch(e){

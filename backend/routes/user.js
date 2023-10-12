@@ -1,7 +1,10 @@
 const express = require('express')
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
 const router = express.Router()
+
+const auth = require('../middleware/auth')
 
 const User = require('../models/user')
 
@@ -44,7 +47,9 @@ router.post('/login' , async (req ,res)=>{
 
         const result = await bcrypt.compare(password ,user.password)
         if(result){
-            return res.json({success : true})
+            const token = await jwt.sign({id : user.id} , "secretkey")
+            console.log(token)
+            return res.json({success : true , token})
         }else{
             return res.status(401).json({success : false , msg : "wrong credentials"})
         }
