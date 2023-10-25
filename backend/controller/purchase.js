@@ -25,12 +25,19 @@ exports.purchaseMembership = async (req , res)=>{
           currency: "INR",
           receipt: "order_rcptid_11"
         };
-      
-        const order = await rzp.orders.create(options) 
+        let order;
+        order = await Order.findOne({where : {status : "PENDING"}})
+        console.log(order)
+        if(order == null){
+
+          order = await rzp.orders.create(options) 
           console.log(order);
           await req.user.createOrder({order_id : order.id , status : "PENDING"})
-          
           return res.json({order_id : order.id , key : rzp.key_id})
+        }
+         
+        return res.json({order_id : order.order_id , key : rzp.key_id})
+
         
   }catch(e){
     console.log(e)

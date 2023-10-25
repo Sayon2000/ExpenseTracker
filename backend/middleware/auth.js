@@ -5,7 +5,6 @@ const User = require('../models/user')
 const authenticate = async(req ,res ,next)=>{
     try{
         const token = req.headers['auth-token'];
-        console.log(req.body.expense)
         console.log("token")
         console.log(token)
         const data = await jwt.verify(token , "secretkey")
