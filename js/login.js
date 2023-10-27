@@ -20,6 +20,7 @@ async function loginUser(e){
         if(result.data.success){
             alert("login succesfully")
             localStorage.setItem('token' , result.data.token)
+            localStorage.setItem('isPremiumUser' , result.data.isPremiumUser)
             window.location ="/"
         }
     }catch(e){

@@ -42,9 +42,9 @@ exports.login = async (req ,res)=>{
 
         const result = await bcrypt.compare(password ,user.password)
         if(result){
-            const token = jwt.sign({id : user.id} , "secretkey")
+            const token = jwt.sign({id : user.id, isPremiumUser : user.isPremiumUser} , process.env.JWT_SECRET)
             console.log(token)
-            return res.json({success : true , token})
+            return res.json({success : true , token ,isPremiumUser : user.isPremiumUser })
         }else{
             return res.status(401).json({success : false , msg : "wrong credentials"})
         }
