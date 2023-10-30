@@ -26,7 +26,8 @@ router.get('/showleaderboard', auth , async(req,res)=>{
                     attributes :[]
                 }
             ],
-            group : [`User.id`]
+            group : [`User.id`],
+            order : [[Sequelize.literal('total'), 'DESC']]
         })
         return res.json(result)
     }else{
