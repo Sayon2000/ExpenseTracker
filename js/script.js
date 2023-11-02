@@ -72,7 +72,18 @@ async function renderElements() {
         window.location = "/login.html"
 
         console.log(localStorage.getItem("isPremiumUser"))
-    if (Boolean(localStorage.getItem("isPremiumUser")) == true) {
+
+    let res = await axios.get('http://localhost:4000/premium/checkPremium',{
+        headers : {
+            "auth-token" : localStorage.getItem('token')
+        }
+    })
+    if(res.status == 200){
+        console.log(res.status)
+        localStorage.setItem('isPremiumUser' , res.data)
+
+    }
+    if (localStorage.getItem("isPremiumUser") == "true") {
         document.getElementById('premium-user').classList.remove('hide')
         document.getElementById('showleaderboard').classList.remove('hide')
         document.getElementById('premium').classList.add('hide')
@@ -172,6 +183,16 @@ async function purchaseMembeship(e) {
             }
         })
         console.log(response)
+        if(response.data.success){
+            localStorage.setItem('isPremiumUser', true)
+            localStorage.setItem('token' , res.data.token)
+
+            document.getElementById('premium-user').classList.remove('hide')
+            document.getElementById('showleaderboard').classList.remove('hide')
+            document.getElementById('premium').classList.add('hide')
+        }else{
+
+        
         var options = {
             "key": response.data.key,
 
@@ -189,6 +210,7 @@ async function purchaseMembeship(e) {
                 })
                 console.log(res)
                 if (res.data.isPremiumUser) {
+                    localStorage.setItem('token' , res.data.token)
                     localStorage.setItem('isPremiumUser', true)
                     document.getElementById('premium-user').classList.remove('hide')
                     document.getElementById('showleaderboard').classList.remove('hide')
@@ -200,6 +222,14 @@ async function purchaseMembeship(e) {
             }
         }
         var rzp1 = new Razorpay(options);
+        // rzp1.on('payment.external', async function () {
+        //     const res = await axios.get("http://localhost:4000/payment/external", {
+        //     headers: {
+        //         "auth-token": localStorage.getItem('token')
+        //     }
+        // })
+        // console.log(res)
+        //   });
         rzp1.on('payment.failed', async function (response) {
             alert('failded')
             console.log(response.error)
@@ -217,6 +247,7 @@ async function purchaseMembeship(e) {
 
         rzp1.open();
         e.preventDefault();
+    }
     } catch (e) {
         console.log(e)
     }
@@ -231,15 +262,16 @@ document.getElementById("showleaderboard").addEventListener('click', async()=>{
             }
         })
         // if(res.)
-        if(res.status){
+        if(res.status == 200){
             console.log(res.data)
             const leaderboard = document.querySelector('#leaderboard ul')
             console.log(leaderboard)
+            leaderboard.innerHTML = ``
             res.data.forEach(user =>{
 
                 const li = document.createElement('li')
 
-                li.textContent = `Name : ${user.name} Total Expenses :${user.total}`
+                li.textContent = `Name : ${user.name} Total Expenses :${user.totalAmount}`
                 leaderboard.appendChild(li)
             })
         }else{

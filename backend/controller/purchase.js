@@ -30,17 +30,41 @@ exports.purchaseMembership = async (req, res) => {
       receipt: "order_rcptid_11"
     };
     let order;
-    order = await Order.findOne({ where: { status: "PENDING" } })
+    const orders = await req.user.getOrders({ where: { status: "PENDING" } })
     console.log(order)
-    if (order == null) {
+    if (orders.length == 0) {
 
       order = await rzp.orders.create(options)
       console.log(order);
       await req.user.createOrder({ order_id: order.id, status: "PENDING" })
       return res.json({ order_id: order.id, key: rzp.key_id })
     }
+    order = orders[0]
+    console.log("orders")
+    const result = await rzp.orders.fetchPayments(order.order_id)
+    // rzp.orders.
+    if(result.count == 0){
+      return res.json({ order_id: order.order_id, key: rzp.key_id })
+    }else{
+      let item = result.items[0]
 
-    return res.json({ order_id: order.order_id, key: rzp.key_id })
+      order.payment_id = item.id
+      if(item.captured){
+        order.status = "SUCCESSFUL"
+        req.user.isPremiumUser = true
+        await req.user.save();
+        const token = jwt.sign({id : req.user.id , isPremiumUser : true} , process.env.JWT_SECRET)
+        await order.save()
+        return res.json({ success: true, msg: "payment complete", token ,isPremiumUser : true})
+      }else{
+        
+        await order.save()
+        order.status = "FAILED"
+        return res.json({ success: false, msg: "payment failed",isPremiumUser : false })
+
+      }
+
+    }
 
 
   } catch (e) {
@@ -128,3 +152,22 @@ exports.failedTransaction = async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" })
   }
 }
+
+
+// exports.handleExternal = async(req,res)=>{
+//   try{
+//     const orders = await req.user.getOrders({where : {status : "PENDING"}});
+//     if(orders.length > 0){
+//       const order = orders[0]
+//       const result = await rzp.orders.fetch(order.order_id)
+//       console.log(result)
+//       return res.json(result)
+//     }else{
+//       return res.status(404).json({success : false , msg : "No order found"})
+//     }
+
+//   }catch(e){
+//     console.log(e)
+//     return res.status(500).json({ msg: "Internal server error" })
+//   }
+// }

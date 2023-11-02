@@ -10,7 +10,7 @@ const Expense = sequelize.define('expense' , {
         autoIncrement : true
     },
     expense :{
-        type : Sequelize.STRING,
+        type : Sequelize.INTEGER,
         allowNull : false
     },
     description : {

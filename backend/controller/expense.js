@@ -21,7 +21,9 @@ exports.addExpense = (req,res)=>{
         expense : expense,
         description : description,
         category : category
-    }).then((data)=>{
+    }).then(async (data)=>{
+        req.user.totalAmount = req.user.totalAmount + +expense;
+        await req.user.save()
         return res.json({data})
     })
     .catch(e =>{
@@ -32,7 +34,10 @@ exports.addExpense = (req,res)=>{
 
 exports.deleteExpense = (req,res)=>{
     const id = req.params.id;
-    req.user.getExpenses({where : { id : id}}).then(expense =>{
+    req.user.getExpenses({where : { id : id}}).then(async expense =>{
+        req.user.totalAmount = Number(req.user.totalAmount) - Number(expense[0].expense)
+        console.log(expense)
+        await req.user.save()
         return expense[0].destroy()
     }).then(()=>{
         return res.status(200).json({success : true , msg : "deleted successfully"})

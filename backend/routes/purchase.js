@@ -14,6 +14,7 @@ router.post('/success' , auth , paymentsController.successfullTransaction)
 
 
 router.post('/failed' , auth ,paymentsController.failedTransaction)
+// router.get('/external' , auth ,paymentsController.handleExternal)
 
 
 module.exports = router;
