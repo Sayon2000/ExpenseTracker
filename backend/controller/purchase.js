@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken')
 
 
 const Order = require('../models/order')
-const User = require('../models/user')
+const User = require('../models/user');
+const sequelize = require('../util/db');
 
 
 
@@ -80,6 +81,7 @@ exports.purchaseMembership = async (req, res) => {
 
 
 exports.successfullTransaction = async (req, res) => {
+  const t = await sequelize.transaction()
   try {
     const orders = await req.user.getOrders({ where: { status: "PENDING" } });
 
@@ -94,12 +96,18 @@ exports.successfullTransaction = async (req, res) => {
         const payment = await rzp.payments.fetch(payment_id);
         // const purchase = await Order.find
         if (payment.status == "captured") {
-          order.payment_id = payment_id;
-          order.status = "SUCCESSFUL"
-          await order.save()
-          req.user.isPremiumUser = true
-          await req.user.save()
+          // order.payment_id = payment_id;
+          // order.status = "SUCCESSFUL"
+          await order.update({payment_id :payment_id , status : "SUCCESSFUL"},{
+            transaction : t
+          })
+          // await order.save()
+          // req.user.isPremiumUser = true
+          await req.user.update({isPremiumUser : true} , {
+            transaction:t
+          })
           const token = jwt.sign({id : req.user.id , isPremiumUser : true} , process.env.JWT_SECRET)
+          await t.commit()
           return res.json({ success: true, msg: "payment complete", token ,isPremiumUser : true})
         } else {
           order.payment_id = payment_id;
@@ -122,6 +130,8 @@ exports.successfullTransaction = async (req, res) => {
 
   } catch (e) {
     console.log(e)
+    await t.rollback()
+    console.log("rollback")
     return res.status(500).json({ msg: "Internal server error" })
   }
 }
