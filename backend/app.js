@@ -13,6 +13,7 @@ const premiumRoutes = require('./routes/premium')
 const User = require('./models/user')
 const Expense = require('./models/expense')
 const Order = require('./models/order')
+const passwordRoutes = require('./routes/forgot-password')
 
 app.use(cors())
 app.use(express.json())
@@ -27,6 +28,7 @@ app.use('/expense' , expenseRoutes)
 app.use('/user' , userRoutes)
 app.use('/payment' , paymentsRoutes)
 app.use('/premium' , premiumRoutes)
+app.use('/password', passwordRoutes)
 
 
 sequelize

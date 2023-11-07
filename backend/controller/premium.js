@@ -22,7 +22,7 @@ exports.checkPremium = async(req ,res)=>{
 exports.showLeaderBoard = async(req,res)=>{
     try{
         // return res.json(req.user)
-        if(req.isPremiumUser){
+        if(req.user.isPremiumUser){
 
         
         const result = await User.findAll({

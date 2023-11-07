@@ -61,3 +61,7 @@ input{
 h2{
     font-size: 2rem;
 }
+
+#forgot-password{
+    min-width: max-content;
+}
