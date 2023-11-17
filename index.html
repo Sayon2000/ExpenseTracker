@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
     <title>Document</title>
 </head>
+
 <body>
     <header>
 
-        <div >
+        <div>
             <button id="premium">Buy premium</button>
             <span id="premium-user" class="hide">you are now a premium user</span>
             <button id="showleaderboard" class="hide">show leaderboard</button>
@@ -17,29 +19,39 @@
         </div>
     </header>
     <div class="choose-expense">
-        <form >
-        <label>Choose expense : </label>
-        <input type="text" id="expense" required>
-        <label>Choose description : </label>
-        <input type="text" id="description" required>
-        <label for="category">Choose a category : </label>
-        <select name="category" id="category">
-            <option value="movie" selected>movie</option>
-            <option value="fuel">fuel</option>
-            <option value="rent">rent</option>
-            <option value="food">food</option>
-            <option value="vacation">vacation</option>
+        <form>
+            <label>Choose expense : </label>
+            <input type="text" id="expense" required>
+            <label>Choose description : </label>
+            <input type="text" id="description" required>
+            <label for="category">Choose a category : </label>
+            <select name="category" id="category">
+                <option value="movie" selected>movie</option>
+                <option value="fuel">fuel</option>
+                <option value="rent">rent</option>
+                <option value="food">food</option>
+                <option value="vacation">vacation</option>
+            </select>
+            <button id="btn">Add expense</button>
+        </form>
+    </div>
+    <div class="" id="report">
+        <label for="expense-display">Expenses : </label>
+
+        <select name="expense-display" id="expense-display">
+            <option value="daily">Day wise</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
           </select>
-        <button id="btn">Add expense</button>
-    </form>
     </div>
     <div class="display">
         <ul>
 
-        
 
 
-</ul>
+
+        </ul>
     </div>
     <div id="leaderboard">
         <ul></ul>
@@ -49,4 +61,6 @@
 
 <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
 <script src="js/script.js"></script>
+<script src="js/report.js"></script>
+
 </html>
