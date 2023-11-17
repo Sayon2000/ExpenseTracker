@@ -54,6 +54,47 @@ router.post('/forgot-password' , async(req,res)=>{
     }
 })
 
+router.post('/test' , async(req,res)=>{
+    try{
+        // const {email} = req.body;
+        // console.log(email);
+        // const user = await User.findAll({where : {email : email}},{
+        //     include : [
+        //         {model : FP}
+        //     ]
+        // })
+        // console.log(user)
+        // console.log(user== null)
+        // if(user === null)
+        //      return res.status(404).json({success : false , msg :"Email not found"})
+
+        var defaultClient = Brevo.ApiClient.instance;
+        var apiKey = defaultClient.authentications['api-key'];
+        apiKey.apiKey = process.env.BREVO_API_KEY
+
+        var apiInstance = new Brevo.TransactionalEmailsApi();
+
+        const sender = { "email": "sayondutta2000@gmail.com"}
+
+        const reciever = [{
+            "email":"anandamayee.2000@gmail.com"
+        }]
+        // const link = await user.createFP();
+        const response = await apiInstance.sendTransacEmail({
+            sender,
+            to : reciever,
+            subject : 'testing',
+            textContent: 'hello , this is a text content',
+        })
+        return res.json({success : true , response})
+
+
+    }catch(e){
+        console.log(e)
+        return res.status(500).json({success : false ,msg :"Internal server error"})
+    }
+})
+
 
 router.post('/reset-password/:resetId' , async(req,res)=>{
     const t = await sequelize.transaction()
