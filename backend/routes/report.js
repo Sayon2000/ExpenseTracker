@@ -60,13 +60,18 @@ router.post('/getMonthly', auth, async (req, res) => {
             const startDate = new Date(month);
             const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1);
             const result = await req.user.getExpenses({
+                attributes : [
+                    [fn('DATE' , literal('createdAt')) , 'date'],
+                    [literal('SUM(expense)') , 'totalAmount']
+                ],
                 where: {
                     createdAt: {
                         [Op.gte]: startDate,
                         [Op.lt]: endDate
 
                     }
-                }
+                },
+                group: [fn('DATE' , literal('createdAt'))]
             })
             return res.json(result)
         } else {
@@ -89,7 +94,7 @@ router.post('/getYearly', auth, async (req, res) => {
             const endYear = new Date(startYear.getFullYear() + 1, 0, 1)
             const result = await req.user.getExpenses({
                 attributes: [
-                    [literal('MONTH(createdAt)'), 'month'],
+                    [fn('MONTHNAME',literal('createdAt')), 'month'],
                     [literal('SUM(expense)'), 'totalAmount'],
                 ],
                 where: {
@@ -98,7 +103,7 @@ router.post('/getYearly', auth, async (req, res) => {
                         [Op.lt]: endYear,
                     },
                 },
-                group: [literal('MONTH(createdAt)')],
+                group: [fn('MONTHNAME',literal('createdAt'))],
                 raw: true,
             });
             return res.json(result)
