@@ -54,6 +54,8 @@ document.getElementById('daily-form').addEventListener('submit' , async(e)=>{
         const tbody = document.querySelector('#daily table tbody')
         console.log(tbody)
         let total =0
+        tbody.innerHTML = ``
+        document.querySelector('#daily h3 span').textContent = date
         res.data.forEach(elem => {
             console.log(elem)
             const tr = document.createElement('tr')
@@ -70,6 +72,95 @@ document.getElementById('daily-form').addEventListener('submit' , async(e)=>{
             tbody.appendChild(tr)
 
         })
+
+        document.getElementById('daily-total').textContent = total
+    }catch(e){
+        console.log(e)
+    }
+})
+
+
+
+document.getElementById('yearly-form').addEventListener('submit' , async(e)=>{
+    e.preventDefault()
+    console.log(e.target['year-picker'].value)
+    const year = e.target['year-picker'].value
+    try{
+
+        const res = await axiosReportInstance.post('/getYearly' , {year} )
+        console.log(res)
+        document.getElementById('daily').classList.add('hide')
+        document.getElementById('monthly').classList.add('hide')
+        document.getElementById('yearly').classList.remove('hide')
+        document.getElementById('weekly').classList.add('hide')
+
+
+        const tbody = document.querySelector('#yearly table tbody')
+        console.log(tbody)
+        let total =0
+        tbody.innerHTML = ``
+        document.querySelector('#yearly h3 span').textContent = year
+        res.data.forEach(elem => {
+            console.log(elem)
+            const tr = document.createElement('tr')
+            const td1 = document.createElement('td')
+            const td2 = document.createElement('td')
+
+            td1.textContent = elem.month
+            td2.textContent = elem.totalAmount
+
+            total = total + +elem.totalAmount
+            tr.appendChild(td1)
+            tr.appendChild(td2)
+
+            tbody.appendChild(tr)
+
+        })
+
+        document.getElementById('yearly-total').textContent = total
+    }catch(e){
+        console.log(e)
+    }
+})
+
+
+document.getElementById('yearly-form').addEventListener('submit' , async(e)=>{
+    e.preventDefault()
+    console.log(e.target['year-picker'].value)
+    const year = e.target['year-picker'].value
+    try{
+
+        const res = await axiosReportInstance.post('/getYearly' , {year} )
+        console.log(res)
+        document.getElementById('daily').classList.add('hide')
+        document.getElementById('monthly').classList.add('hide')
+        document.getElementById('yearly').classList.remove('hide')
+        document.getElementById('weekly').classList.add('hide')
+
+
+        const tbody = document.querySelector('#yearly table tbody')
+        console.log(tbody)
+        let total =0
+        tbody.innerHTML = ``
+        document.querySelector('#yearly h3 span').textContent = year
+        res.data.forEach(elem => {
+            console.log(elem)
+            const tr = document.createElement('tr')
+            const td1 = document.createElement('td')
+            const td2 = document.createElement('td')
+
+            td1.textContent = elem.month
+            td2.textContent = elem.totalAmount
+
+            total = total + +elem.totalAmount
+            tr.appendChild(td1)
+            tr.appendChild(td2)
+
+            tbody.appendChild(tr)
+
+        })
+
+        document.getElementById('yearly-total').textContent = total
     }catch(e){
         console.log(e)
     }
