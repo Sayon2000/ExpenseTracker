@@ -34,6 +34,7 @@ document.getElementById('expense-display').addEventListener('change', (e)=>{
         document.getElementById('monthly-form').classList.add('hide')
         document.getElementById('daily-form').classList.add('hide')
         document.getElementById('yearly-form').classList.add('hide')
+        displayWeekly()
     }
 })
 
@@ -123,33 +124,35 @@ document.getElementById('yearly-form').addEventListener('submit' , async(e)=>{
     }
 })
 
-
-document.getElementById('yearly-form').addEventListener('submit' , async(e)=>{
+document.getElementById('monthly-form').addEventListener('submit' , async(e)=>{
     e.preventDefault()
     console.log(e.target['year-picker'].value)
-    const year = e.target['year-picker'].value
+    // const year = e.target['year-picker'].value
+    // const month = e.target['month-picker'].value
+    const month = e.target['year-picker'].value + "-" + e.target['month-picker'].value
+    console.log(month)
     try{
 
-        const res = await axiosReportInstance.post('/getYearly' , {year} )
+        const res = await axiosReportInstance.post('/getMonthly' , {month} )
         console.log(res)
         document.getElementById('daily').classList.add('hide')
-        document.getElementById('monthly').classList.add('hide')
-        document.getElementById('yearly').classList.remove('hide')
+        document.getElementById('monthly').classList.remove('hide')
+        document.getElementById('yearly').classList.add('hide')
         document.getElementById('weekly').classList.add('hide')
 
 
-        const tbody = document.querySelector('#yearly table tbody')
+        const tbody = document.querySelector('#monthly table tbody')
         console.log(tbody)
         let total =0
         tbody.innerHTML = ``
-        document.querySelector('#yearly h3 span').textContent = year
+        document.querySelector('#monthly h3 span').textContent = e.target['month-picker'].options[e.target['month-picker'].selectedIndex].text
         res.data.forEach(elem => {
             console.log(elem)
             const tr = document.createElement('tr')
             const td1 = document.createElement('td')
             const td2 = document.createElement('td')
 
-            td1.textContent = elem.month
+            td1.textContent = elem.date
             td2.textContent = elem.totalAmount
 
             total = total + +elem.totalAmount
@@ -160,8 +163,49 @@ document.getElementById('yearly-form').addEventListener('submit' , async(e)=>{
 
         })
 
-        document.getElementById('yearly-total').textContent = total
+        document.getElementById('monthly-total').textContent = total
     }catch(e){
         console.log(e)
     }
 })
+
+
+async function displayWeekly(){
+    
+    try{
+
+        const res = await axiosReportInstance.get('/getweekly')
+        console.log(res)
+        document.getElementById('daily').classList.add('hide')
+        document.getElementById('monthly').classList.add('hide')
+        document.getElementById('yearly').classList.add('hide')
+        document.getElementById('weekly').classList.remove('hide')
+
+
+        const tbody = document.querySelector('#weekly table tbody')
+        console.log(tbody)
+        let total =0
+        tbody.innerHTML = ``
+        // document.querySelector('#weekly h3 span').textContent = year
+        res.data.forEach(elem => {
+            console.log(elem)
+            const tr = document.createElement('tr')
+            const td1 = document.createElement('td')
+            const td2 = document.createElement('td')
+
+            td1.textContent = elem.week
+            td2.textContent = elem.totalAmount
+
+            total = total + +elem.totalAmount
+            tr.appendChild(td1)
+            tr.appendChild(td2)
+
+            tbody.appendChild(tr)
+
+        })
+
+        document.getElementById('weekly-total').textContent = total
+    }catch(e){
+        console.log(e)
+    }
+}
