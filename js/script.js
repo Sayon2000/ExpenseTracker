@@ -282,3 +282,26 @@ document.getElementById("showleaderboard").addEventListener('click', async()=>{
         
     }
 })
+
+
+document.getElementById('download-expense').addEventListener('click' , async()=>{
+    console.log('click')
+
+    try{
+        const result = await axios.get('http://localhost:4000/user/download' , {
+            headers : {
+                'auth-token' : localStorage.getItem('token')
+            }
+        })
+
+        const a = document.createElement('a')
+        a.href = result.data.fileUrl
+        a.download = 'myexpense.txt'
+        
+        a.click()
+
+    }catch(e){
+        console.log(e)
+    }
+
+})
