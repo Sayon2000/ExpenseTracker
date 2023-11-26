@@ -16,6 +16,8 @@ router.delete('/deleteExpense/:id' , authenticate, expense.deleteExpense) // del
 
 router.post('/edit-expense/:id' , authenticate,expense.editExpense)
 
+router.get('/get-expense' , authenticate ,expense.getExpenses )
+
 
 
 
