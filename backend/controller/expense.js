@@ -76,8 +76,8 @@ exports.getExpenses = async (req, res) => {
     try {
         const page = req.query.page || 1
         const exp =  req.user.getExpenses({
-            offset: (page - 1) * 5,
-            limit: 5
+            offset: (page - 1) * 2,
+            limit: 2
         })
         const totalExp =  req.user.countExpenses()
         const [expenses ,totalExpenses ] = await Promise.all([exp , totalExp])

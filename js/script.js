@@ -5,8 +5,10 @@ ul.addEventListener('click', handleClick)
 
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:4000/expense"
-
+    baseURL: "http://localhost:4000/expense",
+    headers : {
+        'auth-token' : localStorage.getItem('token')
+    }
 })
 
 var next = null;
@@ -25,14 +27,7 @@ async function saveDetails(e) {
         if (id === null) {
 
             console.log(localStorage.getItem('token'))
-            let { data } = await axiosInstance.post('/add-expense', value, {
-
-                headers: {
-                    "auth-token": localStorage.getItem('token')
-                }
-            }
-
-            )
+            let { data } = await axiosInstance.post('/add-expense', value )
             // let {data } = await axiosInstance.post('/add-expense' ,
             // //      value
             // // )
@@ -40,11 +35,7 @@ async function saveDetails(e) {
             let li = display(data.data)
             ul.appendChild(li)
         } else {
-            let res = await axiosInstance.post(`/edit-expense/${id}`, value, {
-                headers: {
-                    "auth-token": localStorage.getItem('token')
-                }
-            })
+            let res = await axiosInstance.post(`/edit-expense/${id}`, value)
             console.log(res)
             if (res.status == 200) {
                 value.id = id;
@@ -90,13 +81,8 @@ async function renderElements() {
     }
 
     // axiosInstance.setHeaders({});
-    let data = await axiosInstance.get('/', {
-        headers: {
-            "auth-token": localStorage.getItem('token')
-        }
-    })
-    console.log(data)
-    let users = data.data.data;
+    let result = await axiosInstance.get('/get-expense')
+    let users = result.data.expenses;
     users.forEach((value) => {
 
 
@@ -137,11 +123,7 @@ async function handleClick(e) {
     try {
         if (e.target.classList.contains('delete')) {
             let expenseId = e.target.id;
-            let res = await axiosInstance.delete(`/deleteExpense/${expenseId}`, {
-                headers: {
-                    "auth-token": localStorage.getItem('token')
-                }
-            })
+            let res = await axiosInstance.delete(`/deleteExpense/${expenseId}`)
             if (res.status == 200) {
                 ul.removeChild(e.target.parentElement)
             }
@@ -304,4 +286,73 @@ document.getElementById('download-expense').addEventListener('click' , async()=>
         console.log(e)
     }
 
+})
+
+
+document.querySelector('.page').addEventListener('click' , async(e)=>{
+    try{
+
+        if(e.target.classList.contains('page-btn')){
+            console.log('clicked')
+            console.log(e.target.id == 'next')
+            const page = e.target.value
+            const result = await axiosInstance.get(`/get-expense?page=${page}`)
+            console.log(result)
+            let users = result.data.expenses;
+            ul.innerHTML = ``
+            users.forEach((value) => {
+        
+        
+                let li = display(value)
+                ul.appendChild(li)
+            })
+            let prev = document.getElementById('prev')
+            let curr = document.getElementById('curr')
+            let next = document.getElementById('next')
+            
+            if(e.target.id == 'next'){
+
+                
+                prev.classList.remove('hide')
+                prev.textContent = curr.textContent
+                prev.value = curr.value
+                
+                curr.textContent = next.textContent
+                curr.value = next.value
+
+                if(result.data.totalExpenses > 2 * page){
+                    next.value = +page + 1
+                    next.textContent = +page + 1
+                }else{
+
+                    next.classList.add('hide')
+                }
+            }else if(e.target.id == 'prev'){
+                if(page > 1){
+                    next.classList.remove('hide')
+                    prev.textContent = page -1
+                    prev.value = page-1
+
+                    curr.textContent = page
+                    curr.value = page
+
+                    next.textContent = +page+1
+                    next.value = +page+1
+                }else{
+                    prev.classList.add('hide')
+                    curr.textContent = 1
+                    curr.value = 1
+                    if(result.data.totalExpenses > 2 * page){
+                        next.value = 2
+                        next.textContent = 2
+                    }else{
+    
+                        next.classList.add('hide')
+                    }
+                }
+            }
+        }
+    }catch(e){
+        console.log(e)
+    }
 })
