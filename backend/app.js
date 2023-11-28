@@ -13,6 +13,8 @@ const premiumRoutes = require('./routes/premium')
 const User = require('./models/user')
 const Expense = require('./models/expense')
 const Order = require('./models/order')
+const Download = require('./models/download')
+
 const passwordRoutes = require('./routes/forgot-password')
 const resetPassword = require('./models/resetPassword')
 const reportRoutes = require('./routes/report')
@@ -28,6 +30,9 @@ Order.belongsTo(User)
 
 User.hasMany(resetPassword)
 resetPassword.belongsTo(User)
+
+User.hasMany(Download)
+Download.belongsTo(User)
 
 app.use('/expense' , expenseRoutes)
 app.use('/user' , userRoutes)

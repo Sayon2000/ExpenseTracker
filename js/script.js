@@ -1,6 +1,11 @@
 let ul = document.querySelector(".display ul")
 document.querySelector(".choose-expense form").addEventListener('submit', saveDetails);
-window.addEventListener('load', renderElements)
+window.addEventListener('load',()=>{
+    
+    renderElements()
+    showDownloadUrls()
+} 
+)
 ul.addEventListener('click', handleClick)
 
 
@@ -81,8 +86,19 @@ async function renderElements() {
     }
 
     // axiosInstance.setHeaders({});
-    let result = await axiosInstance.get('/get-expense')
+    const ITEMS_PER_PAGE = +localStorage.getItem('totalItems') || 5
+    console.log(ITEMS_PER_PAGE)
+    document.getElementById('display-expenses').value = ITEMS_PER_PAGE 
+    let result = await axiosInstance.post('/get-expense' , {items : ITEMS_PER_PAGE})
+    console.log(result)
+    if(ITEMS_PER_PAGE > result.data.totalExpenses){
+        document.getElementById('next').classList.add('hide')
+    }else{
+        document.getElementById('next').classList.remove('hide')
+
+    }
     let users = result.data.expenses;
+    ul.innerHTML = ``
     users.forEach((value) => {
 
 
@@ -270,11 +286,7 @@ document.getElementById('download-expense').addEventListener('click' , async()=>
     console.log('click')
 
     try{
-        const result = await axios.get('http://localhost:4000/user/download' , {
-            headers : {
-                'auth-token' : localStorage.getItem('token')
-            }
-        })
+        const result = await axiosInstance.get('/download')
 
         const a = document.createElement('a')
         a.href = result.data.fileUrl
@@ -291,12 +303,12 @@ document.getElementById('download-expense').addEventListener('click' , async()=>
 
 document.querySelector('.page').addEventListener('click' , async(e)=>{
     try{
-
+        const items = +localStorage.getItem('totalItems') || 5
         if(e.target.classList.contains('page-btn')){
             console.log('clicked')
             console.log(e.target.id == 'next')
             const page = e.target.value
-            const result = await axiosInstance.get(`/get-expense?page=${page}`)
+            const result = await axiosInstance.post(`/get-expense?page=${page}` , {items})
             console.log(result)
             let users = result.data.expenses;
             ul.innerHTML = ``
@@ -320,9 +332,10 @@ document.querySelector('.page').addEventListener('click' , async(e)=>{
                 curr.textContent = next.textContent
                 curr.value = next.value
 
-                if(result.data.totalExpenses > 2 * page){
+                if(result.data.totalExpenses > items * page){
                     next.value = +page + 1
                     next.textContent = +page + 1
+                    // next.classList.remove('hide')
                 }else{
 
                     next.classList.add('hide')
@@ -342,9 +355,10 @@ document.querySelector('.page').addEventListener('click' , async(e)=>{
                     prev.classList.add('hide')
                     curr.textContent = 1
                     curr.value = 1
-                    if(result.data.totalExpenses > 2 * page){
+                    if(result.data.totalExpenses > items * page){
                         next.value = 2
                         next.textContent = 2
+                        next.classList.remove('hide')
                     }else{
     
                         next.classList.add('hide')
@@ -355,4 +369,36 @@ document.querySelector('.page').addEventListener('click' , async(e)=>{
     }catch(e){
         console.log(e)
     }
+})
+
+async function showDownloadUrls(){
+    try{
+        const getUrls = await axiosInstance.get('/get-all-urls')
+        console.log(getUrls)
+        let urls = getUrls.data.urls;
+        const showDownloadUrls = document.getElementById('download-urls')
+        if(urls.length > 0){
+            showDownloadUrls.classList.remove('hide')
+            const ul = showDownloadUrls.querySelector('ul')
+            urls.forEach(elem =>{
+                const li = document.createElement('li')
+                const a = document.createElement('a')
+                a.href = elem.url
+                a.download = elem.createdAt + '-expense.txt'
+                a.textContent = elem.createdAt + '-expense.txt'
+                li.appendChild(a)
+
+                ul.appendChild(li)
+            })
+        }
+    }catch(e){
+        console.log(e)
+    }
+}
+
+
+document.getElementById('display-expenses').addEventListener('change' , (e)=>{
+    console.log(e.target.value)
+    localStorage.setItem('totalItems' , e.target.value)
+    renderElements()
 })

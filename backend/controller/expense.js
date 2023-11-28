@@ -1,6 +1,8 @@
 const Expense = require('../models/expense')
 const sequelize = require('../util/db')
 
+const S3Services = require('../services/s3services')
+
 exports.getAll = (req, res) => {
     req.user.getExpenses({
         raw: true,
@@ -74,10 +76,12 @@ exports.editExpense = (req, res) => {
 
 exports.getExpenses = async (req, res) => {
     try {
-        const page = req.query.page || 1
+        const page = +req.query.page || 1
+        const items = +req.body.items
+        console.log(items)
         const exp =  req.user.getExpenses({
-            offset: (page - 1) * 2,
-            limit: 2
+            offset: (page - 1) * items,
+            limit: items
         })
         const totalExp =  req.user.countExpenses()
         const [expenses ,totalExpenses ] = await Promise.all([exp , totalExp])
@@ -85,5 +89,30 @@ exports.getExpenses = async (req, res) => {
     } catch (e) {
         console.log(e)
         return res.status(500).json({ success: false, msg: "Internal server error" })
+    }
+}
+
+exports.downloadExpenses = async(req,res)=>{
+    try{
+        const expenses = await req.user.getExpenses();
+        const expensesToString = JSON.stringify(expenses)
+        const fileName = `expense${req.user.id}/${new Date()}.txt`
+        const fileUrl = await S3Services.uploadToS3(expensesToString , fileName);
+        let url = fileUrl.Location
+        await req.user.createDownload({url : url})
+        return res.json({fileUrl  :fileUrl.Location , success : true})
+    }catch(e){
+        console.log(e)
+        return res.status(500).json({success : false , msg : "Internal server error"})
+    }
+}
+
+exports.downloadUrls = async(req,res)=>{
+    try{
+        const urls = await req.user.getDownloads();
+        return res.json({success : true , urls})
+    }catch(e){
+        console.log(e)
+        return res.status(500).json({success: false , msg :"Internal server error"})
     }
 }
