@@ -77,7 +77,7 @@ exports.editExpense = (req, res) => {
 exports.getExpenses = async (req, res) => {
     try {
         const page = +req.query.page || 1
-        const items = +req.body.items
+        const items = +req.body.items || 5
         console.log(items)
         const exp =  req.user.getExpenses({
             offset: (page - 1) * items,
