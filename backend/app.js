@@ -5,8 +5,11 @@ const compression = require('compression')
 const morgan = require('morgan')
 const fs = require('fs')
 const path = require('path')
+const https = require('https')
 
 const app = express();
+
+require('dotenv').config()
 
 const sequelize = require('./util/db')
 
@@ -53,6 +56,8 @@ app.use('/payment' , paymentsRoutes)
 app.use('/premium' , premiumRoutes)
 app.use('/password', passwordRoutes)
 app.use('/report' , reportRoutes)
+
+
 
 
 sequelize
