@@ -29,7 +29,7 @@ const reportRoutes = require('./routes/report')
 
 app.use(cors())
 app.use(express.json())
-app.use(helmet())
+// app.use(helmet())
 app.use(compression())
 
 
@@ -56,6 +56,8 @@ app.use('/payment' , paymentsRoutes)
 app.use('/premium' , premiumRoutes)
 app.use('/password', passwordRoutes)
 app.use('/report' , reportRoutes)
+
+app.use(express.static(path.join(__dirname , '..' , 'frontend')))
 
 
 

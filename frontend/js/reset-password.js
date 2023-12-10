@@ -1,7 +1,8 @@
 var resetId = null;
 
 const axiosInstance = axios.create({
-    baseURL : 'http://localhost:4000/password'
+    baseURL : 'http://3.27.133.80:4000/password'
+    
 })
 
 window.addEventListener('load' , async()=>{

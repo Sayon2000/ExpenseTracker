@@ -1,9 +1,13 @@
-document.getElementById('signup').addEventListener('submit' , createUser)
 
 const axiosInstance = axios.create({
-    baseURL : "http://localhost:4000/user"
+    baseURL : "http://3.27.133.80:4000/user"
+    // httpsAgent: new https.Agent({  
+    //     rejectUnauthorized: false
+    // })
 })
+// axiosInstance.defaults.httpsAgent = new axios.defaults.httpsAgent()
 
+document.getElementById('signup').addEventListener('submit' , createUser)
 async function createUser(e){
     e.preventDefault()
     console.log(e.target.name.value)
@@ -23,7 +27,7 @@ async function createUser(e){
         e.target.email.value = ""
         e.target.password.value = ""
     }catch(e){
-        console.log(e.response.status)
+        console.log(e)
         if(e.response.status == 401)
              alert("user already exists")
         console.log(e)

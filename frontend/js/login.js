@@ -1,8 +1,12 @@
-document.getElementById('login').addEventListener('submit' , loginUser)
 
 const axiosInstance = axios.create({
-    baseURL : "http://localhost:4000/user"
-})
+    baseURL : "http://3.27.133.80:4000/user"
+    // withCredentials : true
+    // httpsAgent: new https.Agent({  
+        //     rejectUnauthorized: false
+        // })
+    })
+    document.getElementById('login').addEventListener('submit' , loginUser)
 
 
 async function loginUser(e){
