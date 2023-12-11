@@ -41,7 +41,7 @@ router.post('/forgot-password' , async(req,res)=>{
         const response = await apiInstance.sendTransacEmail({
             sender,
             to : reciever,
-            subject : 'testing',
+            subject : 'Reset password for Expense Tracker App',
             htmlContent: '<p>Click the link to reset your password</p>'+
             `<a href="http://${process.env.IP}/reset-password.html?reset=${link.id}">click here</a>`,
         })
