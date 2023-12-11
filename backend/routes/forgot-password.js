@@ -43,7 +43,7 @@ router.post('/forgot-password' , async(req,res)=>{
             to : reciever,
             subject : 'testing',
             htmlContent: '<p>Click the link to reset your password</p>'+
-            `<a href="http://127.0.0.1:5500/reset-password.html?reset=${link.id}">click here</a>`,
+            `<a href="http://${process.env.IP}/reset-password.html?reset=${link.id}">click here</a>`,
         })
         return res.json({success : true ,link})
 
