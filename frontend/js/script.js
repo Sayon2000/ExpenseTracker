@@ -276,7 +276,9 @@ document.getElementById("showleaderboard").addEventListener('click', async()=>{
         // if(res.)
         if(res.status == 200){
             console.log(res.data)
+            document.querySelector('#leaderboard').classList.remove('hide')
             const leaderboard = document.querySelector('#leaderboard ul')
+
             console.log(leaderboard)
             leaderboard.innerHTML = ``
             res.data.forEach(user =>{
