@@ -1,6 +1,6 @@
 
 const axiosInstance = axios.create({
-    baseURL : "http://3.27.133.80/user"
+    baseURL : "http://localhost:4000/user"
     // httpsAgent: new https.Agent({  
     //     rejectUnauthorized: false
     // })

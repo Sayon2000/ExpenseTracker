@@ -1,7 +1,7 @@
 var resetId = null;
 
 const axiosInstance = axios.create({
-    baseURL : 'http://3.27.133.80/password'
+    baseURL : 'http://localhost:4000/password'
     
 })
 
