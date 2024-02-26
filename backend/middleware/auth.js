@@ -10,10 +10,12 @@ const authenticate = async(req ,res ,next)=>{
         console.log(token)
         const data = jwt.verify(token , process.env.JWT_SECRET)
         console.log(data)
-        const user = await User.findByPk(data.id)
+        const user = await User.findById(data.id)
 
         // return res.json({success : true})
-        req.user = user;
+        const newUser = new User(user.name,user.email,user.password,user.isPremiumUser,user.totalAmount,user._id)
+        req.user = newUser;
+
         req.isPremiumUser = data.isPremiumUser;
         next()
 

@@ -2,13 +2,14 @@ const mongodb=require('mongodb')
 
 const {getDb } = require('../util/db')
 
-class User{
-    constructor(name,email,password,isPremiumUser,totalAmount){
+    class User{
+    constructor(name,email,password,isPremiumUser,totalAmount,id){
         this.name = name;
         this.email = email;
         this.password = password;
         this.isPremiumUser = isPremiumUser;
         this.totalAmount = totalAmount;
+        this._id = id?new mongodb.ObjectId(id) : null;
     }
 
     save(){
@@ -23,6 +24,15 @@ class User{
     static findById(id){
         let db = getDb()
         return db.collection('users').findOne({_id : new mongodb.ObjectId(id)})
+        .then(user => {
+            console.log(user)
+            return user
+        }).catch(err => console.log(err))
+    }
+
+    static findOne(obj){
+        let db = getDb()
+        return db.collection('users').findOne(obj)
         .then(user => {
             console.log(user)
             return user
