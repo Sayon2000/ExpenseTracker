@@ -10,6 +10,7 @@ const mongoConnect = (cb)=>{
 .then(result => 
     {   console.log('connected!')
         _db = result.db()
+        cb()
     })
 .catch(err =>console.log(err))
 }
@@ -20,4 +21,4 @@ const getDb = ()=>{
     throw 'no database found'
 }
 
-module.exports = {mongoConnect,getDb};
+module.exports = {mongoConnect, getDb};

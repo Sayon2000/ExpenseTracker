@@ -11,10 +11,10 @@ const app = express();
 
 require('dotenv').config()
 
-const mongoConnect = require('./util/db')
+const {mongoConnect} = require('./util/db')
 
 // const expenseRoutes = require('./routes/expense')
-// const userRoutes = require('./routes/user')
+const userRoutes = require('./routes/user')
 // const paymentsRoutes = require('./routes/purchase')
 // const premiumRoutes = require('./routes/premium')
 
@@ -51,7 +51,7 @@ app.use(compression())
 // Download.belongsTo(User)
 
 // app.use('/expense' , expenseRoutes)
-// app.use('/user' , userRoutes)
+app.use('/user' , userRoutes)
 // app.use('/payment' , paymentsRoutes)
 // app.use('/premium' , premiumRoutes)
 // app.use('/password', passwordRoutes)
@@ -62,7 +62,7 @@ app.use(express.static(path.join(__dirname , '..' , 'frontend')))
 
 
 
-mongoConnect((result) => {
+mongoConnect(() => {
     app.listen(4000)
-    console.log(result)
+    
 })
