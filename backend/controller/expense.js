@@ -92,23 +92,23 @@ exports.deleteExpense = (req, res) => {
 //     })
 // }
 
-// exports.getExpenses = async (req, res) => {
-//     try {
-//         const page = +req.query.page || 1
-//         const items = +req.body.items || 5
-//         console.log(items)
-//         const exp =  req.user.getExpenses({
-//             offset: (page - 1) * items,
-//             limit: items
-//         })
-//         const totalExp =  req.user.countExpenses()
-//         const [expenses ,totalExpenses ] = await Promise.all([exp , totalExp])
-//         return res.json({ expenses, totalExpenses })
-//     } catch (e) {
-//         console.log(e)
-//         return res.status(500).json({ success: false, msg: "Internal server error" })
-//     }
-// }
+exports.getExpenses = async (req, res) => {
+    try {
+        const page = +req.query.page || 1
+        const items = +req.body.items || 5
+        console.log(items)
+        const exp =  req.user.getExpenses(
+            offset= (page - 1) * items,
+             items
+        )
+        const totalExp =  req.user.countExpenses()
+        const [expenses ,totalExpenses ] = await Promise.all([exp , totalExp])
+        return res.json({ expenses, totalExpenses })
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({ success: false, msg: "Internal server error" })
+    }
+}
 
 exports.downloadExpenses = async(req,res)=>{
     try{

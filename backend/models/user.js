@@ -51,7 +51,6 @@ const {getDb } = require('../util/db');
     }
 
     async deleteExpense(id){
-        console.log("line 54")
         let db = getDb()
 
         const expense = await db.collection('expenses').findOne({_id : new mongodb.ObjectId(id) , userId :new mongodb.ObjectId(this._id)})
@@ -63,6 +62,21 @@ const {getDb } = require('../util/db');
         return db.collection('expenses').deleteOne({_id:new mongodb.ObjectId(id)})
     }
 
+    async getExpenses(skip , limit){
+        let db = getDb()
+        
+        return db.collection('expenses').find({userId : new mongodb.ObjectId(this._id)}).skip(skip).limit(limit).toArray().then((expenses)=>{
+            console.log(expenses)
+            return expenses
+        }).
+        catch(e => console.log(e))
+    }
+    
+    async countExpenses(){
+        let db = getDb()
+        return db.collection('expenses').find({userId : new mongodb.ObjectId(this._id)}).count()
+    }
+    
     
 }
 

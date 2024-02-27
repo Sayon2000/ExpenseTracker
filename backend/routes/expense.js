@@ -15,7 +15,7 @@ router.delete('/deleteExpense/:id' , authenticate, expense.deleteExpense) // del
 
 // router.post('/edit-expense/:id' , authenticate,expense.editExpense)
 
-// router.post('/get-expense' , authenticate ,expense.getExpenses )
+router.post('/get-expense' , authenticate ,expense.getExpenses )
 
 
 // router.get('/download' , authenticate , expense.downloadExpenses)
