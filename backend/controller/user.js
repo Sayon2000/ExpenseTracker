@@ -57,7 +57,7 @@ console.log(user)
         const result = await bcrypt.compare(password, user.password)
         if (result) {
             console.log(user._id)
-            const token = jwt.sign({ id: user.id, isPremiumUser: user.isPremiumUser }, process.env.JWT_SECRET)
+            const token = jwt.sign({ id: user._id, isPremiumUser: user.isPremiumUser }, process.env.JWT_SECRET)
             console.log(token)
             return res.json({ success: true, token, isPremiumUser: user.isPremiumUser })
         } else {

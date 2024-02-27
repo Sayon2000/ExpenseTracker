@@ -137,7 +137,7 @@ function display(data) {
     let del = document.createElement('button')
     del.appendChild(document.createTextNode("Delete expense"))
     del.classList.add('delete')
-    del.id = data.id
+    del.id = data._id
     let edit = document.createElement('button')
     edit.appendChild(document.createTextNode("Edit expense"))
     edit.classList.add('edit')

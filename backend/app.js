@@ -13,7 +13,7 @@ require('dotenv').config()
 
 const {mongoConnect} = require('./util/db')
 
-// const expenseRoutes = require('./routes/expense')
+const expenseRoutes = require('./routes/expense')
 const userRoutes = require('./routes/user')
 // const paymentsRoutes = require('./routes/purchase')
 // const premiumRoutes = require('./routes/premium')
@@ -50,7 +50,7 @@ app.use(compression())
 // User.hasMany(Download)
 // Download.belongsTo(User)
 
-// app.use('/expense' , expenseRoutes)
+app.use('/expense' , expenseRoutes)
 app.use('/user' , userRoutes)
 // app.use('/payment' , paymentsRoutes)
 // app.use('/premium' , premiumRoutes)

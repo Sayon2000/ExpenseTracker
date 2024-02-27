@@ -20,6 +20,10 @@ class Expense{
             return exp
         }).catch(err => console.log(err))
     }
+
+    static deleteById(id){
+        
+    }
 }
 
 
