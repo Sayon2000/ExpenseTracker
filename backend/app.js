@@ -7,14 +7,15 @@ const fs = require('fs')
 const path = require('path')
 const https = require('https')
 
+const mongoose = require('mongoose')
+
 const app = express();
 
 require('dotenv').config()
 
-const {mongoConnect} = require('./util/db')
 
-const expenseRoutes = require('./routes/expense')
-const userRoutes = require('./routes/user')
+// const expenseRoutes = require('./routes/expense')
+// const userRoutes = require('./routes/user')
 // const paymentsRoutes = require('./routes/purchase')
 // const premiumRoutes = require('./routes/premium')
 
@@ -50,8 +51,8 @@ app.use(compression())
 // User.hasMany(Download)
 // Download.belongsTo(User)
 
-app.use('/expense' , expenseRoutes)
-app.use('/user' , userRoutes)
+// app.use('/expense' , expenseRoutes)
+// app.use('/user' , userRoutes)
 // app.use('/payment' , paymentsRoutes)
 // app.use('/premium' , premiumRoutes)
 // app.use('/password', passwordRoutes)
@@ -62,7 +63,9 @@ app.use(express.static(path.join(__dirname , '..' , 'frontend')))
 
 
 
-mongoConnect(() => {
+mongoose.connect(process.env.MONGO_URI).then(() => {
+    console.log('connected')
     app.listen(4000)
+
     
-})
+}).catch(e => console.log(e))

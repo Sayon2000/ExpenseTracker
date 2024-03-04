@@ -1,61 +1,29 @@
-const mongodb=require('mongodb')
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
 
-const {getDb } = require('../util/db')
 
+const expenseSchema = new Schema({
 
-class Expense{
-    constructor(expense,description,category,userId){
-        this.expense = expense;
-        this.description = description;
-        this.category = category;
-        this.userId = new mongodb.ObjectId(userId);
+    expense: {
+        type: Number,
+        required : true
+    },
+    description: {
+        type: String,
+        required : true
+    },
+    category: {
+        type: String,
+        required : true
+    },
+    createdAt : {
+        type : Date,
+        default : Date.now
+    },
+    userId : {
+        type : Schema.Types.ObjectId,
+        ref : 'users'
     }
+})
 
-    save(){
-        let db = getDb()
-  
-        return db.collection('expenses').insertOne(this)
-        .then(exp => {
-            console.log(exp)
-            return exp
-        }).catch(err => console.log(err))
-    }
-
-    static deleteById(id){
-        
-    }
-}
-
-
-
-
-// const Expense = sequelize.define('expense', {
-//     id: {
-//         type: Sequelize.INTEGER,
-//         allowNull: false,
-//         primaryKey: true,
-//         autoIncrement: true
-//     },
-//     expense: {
-//         type: Sequelize.INTEGER,
-//         allowNull: false
-//     },
-//     description: {
-//         type: Sequelize.STRING,
-//         allowNull: false
-//     },
-//     category: {
-//         type: Sequelize.STRING,
-//         allowNull: false
-//     },
-//     createdAt : {
-//         type : Sequelize.DATEONLY,
-//         defaultValue : Sequelize.NOW
-//     }
-// },
-//     {
-//         timestamps: false
-
-//     })
-
-module.exports = Expense;
+module.exports = mongoose.model('expenses' , expenseSchema);
