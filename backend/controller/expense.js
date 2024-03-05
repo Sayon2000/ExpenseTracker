@@ -3,105 +3,85 @@ const Expense = require('../models/expense')
 
 const S3Services = require('../services/s3services')
 
-exports.getAll = (req, res) => {
-    req.user.getExpenses({
-        raw: true,
-        attributes: ["id", "expense", "category", "description"]
-    })
-        .then(data => {
-            return res.json({ data })
-        })
-        .catch(e => {
-            console.log(e)
-            return res.status(500).json({ msg: "Internal server error" })
-        })
-}
+// exports.getAll = (req, res) => {
+//     req.user.getExpenses({
+//         raw: true,
+//         attributes: ["id", "expense", "category", "description"]
+//     })
+//         .then(data => {
+//             return res.json({ data })
+//         })
+//         .catch(e => {
+//             console.log(e)
+//             return res.status(500).json({ msg: "Internal server error" })
+//         })
+// }
 
 exports.addExpense = async (req, res) => {
+    try{
+
+
     const expense = req.body.expense;
     const description = req.body.description;
     const category = req.body.category;
 
-    const exp = new Expense(expense,description,category,req.user._id)
-    const newexp = await exp.save()
+    const data =await Expense.create({expense,description,category,userId : req.user._id})
+    
 
     req.user.totalAmount = +req.user.totalAmount + +expense
     req.user.save()
-    const data = {expense,description,category,_id :newexp.insertedId }
+
     return res.json({data})
-
-    // const t = await sequelize.transaction()
-
-    // req.user.createExpense({
-    //     expense: expense,
-    //     description: description,
-    //     category: category
-    // }, {
-    //     transaction: t
-    // }).then(async (data) => {
-    //     let newAmount = req.user.totalAmount + +expense;
-    //     await req.user.update({ totalAmount: newAmount }, {
-    //         transaction: t
-    //     })
-    //     await t.commit()
-    //     return res.json({ data })
-    // })
-    //     .catch(async e => {
-    //         console.log(e)
-    //         await t.rollback()
-    //         return res.status(403).json({ success: false })
-    //     })
+}catch(e){
+    console.log(e)
+    
 }
 
-exports.deleteExpense = (req, res) => {
-    const id = req.params.id;
+    
+}
 
-    req.user.deleteExpense(id)
-    .then(()=>{
+exports.deleteExpense = async(req, res) => {
+    try{
+        const id = req.params.id;
+        const expense =await Expense.findByIdAndDelete({userId : req.user._id , _id : id})
+        console.log("return from findByIdand delte  ")
+        console.log(expense)
+        req.user.totalAmount = Number(req.user.totalAmount) - Number(expense.expense)
+        console.log(expense)
+        await req.user.save()
+        
+
         return res.status(200).json({ success: true, msg: "deleted successfully" })
-}).catch(e => {
+    }  
+    catch(e){
         console.log(e)
         return res.status(401).json({ success: false })
-    })
-
-    // req.user.getExpenses({ where: { id: id } }).then(async expense => {
-    //     req.user.totalAmount = Number(req.user.totalAmount) - Number(expense[0].expense)
-    //     console.log(expense)
-    //     await req.user.save()
-    //     return expense[0].destroy()
-    // }).then(() => {
-    //     return res.status(200).json({ success: true, msg: "deleted successfully" })
-    // }).catch(e => {
-    //     console.log(e)
-    //     return res.status(401).json({ success: false })
-    // })
+    }
 }
 
-// exports.editExpense = (req, res) => {
-//     const id = req.params.id;
-//     req.user.getExpenses({ where: { id: id } }).then(data => {
-//         data[0].expense = req.body.expense,
-//             data[0].description = req.body.description,
-//             data[0].category = req.body.category
-//         return data[0].save()
-//     }).then(() => {
-//         return res.json({ success: true })
-//     }).catch(e => {
-//         console.log(e)
-//         return res.status(403).json({ success: false })
-//     })
-// }
+exports.editExpense = (req, res) => {
+    const id = req.params.id;
+    Expense.find({ _id: id,userId : req.user._id }).then(data => {
+        data[0].expense = req.body.expense,
+            data[0].description = req.body.description,
+            data[0].category = req.body.category
+        return data[0].save()
+    }).then(() => {
+        return res.json({ success: true })
+    }).catch(e => {
+        console.log(e)
+        return res.status(403).json({ success: false })
+    })
+}
 
 exports.getExpenses = async (req, res) => {
     try {
         const page = +req.query.page || 1
         const items = +req.body.items || 5
         console.log(items)
-        const exp =  req.user.getExpenses(
-            offset= (page - 1) * items,
-             items
-        )
-        const totalExp =  req.user.countExpenses()
+        const offset= (page - 1) * items
+        const exp =  Expense.find({userId : req.user._id}).skip(offset).limit(items)
+        const totalExp =  Expense.find({userId : req.user._id}).countDocuments()
         const [expenses ,totalExpenses ] = await Promise.all([exp , totalExp])
         return res.json({ expenses, totalExpenses })
     } catch (e) {

@@ -13,13 +13,13 @@ router.post('/add-expense' , authenticate,expense.addExpense) // add a new expen
 
 router.delete('/deleteExpense/:id' , authenticate, expense.deleteExpense) // delete a expense
 
-// router.post('/edit-expense/:id' , authenticate,expense.editExpense)
+router.post('/edit-expense/:id' , authenticate,expense.editExpense)
 
 router.post('/get-expense' , authenticate ,expense.getExpenses )
 
 
-// router.get('/download' , authenticate , expense.downloadExpenses)
-// router.get('/get-all-urls' , authenticate , expense.downloadUrls)
+router.get('/download' , authenticate , expense.downloadExpenses)
+router.get('/get-all-urls' , authenticate , expense.downloadUrls)
 
 
 module.exports = router;

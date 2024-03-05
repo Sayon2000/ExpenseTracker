@@ -141,7 +141,7 @@ function display(data) {
     let edit = document.createElement('button')
     edit.appendChild(document.createTextNode("Edit expense"))
     edit.classList.add('edit')
-    edit.id = data.id
+    edit.id = data._id
     li.appendChild(del)
     li.appendChild(edit)
     return li;
