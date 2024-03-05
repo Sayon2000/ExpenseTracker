@@ -16,7 +16,7 @@ require('dotenv').config()
 
 const expenseRoutes = require('./routes/expense')
 const userRoutes = require('./routes/user')
-// const paymentsRoutes = require('./routes/purchase')
+const paymentsRoutes = require('./routes/purchase')
 // const premiumRoutes = require('./routes/premium')
 
 
@@ -39,7 +39,7 @@ app.use(compression())
 
 app.use('/expense' , expenseRoutes)
 app.use('/user' , userRoutes)
-// app.use('/payment' , paymentsRoutes)
+app.use('/payment' , paymentsRoutes)
 // app.use('/premium' , premiumRoutes)
 // app.use('/password', passwordRoutes)
 // app.use('/report' , reportRoutes)
